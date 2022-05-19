@@ -12,6 +12,7 @@ import javax.swing.JFrame;
 public class StarCanvas extends JComponent {
 	public static final int SIZE = 100;
 
+	// Constants for colours.;
 	private static final Color BLACK_COLOR = new Color(40, 44, 52);
 	private static final Color ORANGE_COLOR = new Color(228, 86, 73);
 	private static final Color GREEN_COLOR = new Color(80, 161, 79);
@@ -27,6 +28,7 @@ public class StarCanvas extends JComponent {
 		this.invalidPath = false;
 	}
 
+	// Creates a JFrame window.
 	public static JFrame createFrame(String title, int scale) {
 		var frame = new JFrame();
 		frame.setResizable(false);
@@ -37,28 +39,34 @@ public class StarCanvas extends JComponent {
 		return frame;
 	}
 
+	// Sets the stars to be drawn.
 	public void setStars(Star[] stars) {
 		this.stars = stars;
 	}
 
+	// Set the points between stars to draw (path).
 	public void setLineIndices(Integer[] indices) {
 		this.indices = indices;
 	}
 
+	// Set to true if a path was not found.
 	public void invalidPath(boolean b) {
 		this.invalidPath = b;
 	}
 
+	// Draws the stars and path.
 	@Override
 	public void paint(Graphics g) {
 		super.paint(g);
 		var g2d = (Graphics2D)g;
 
+		// If the path was invalid, draw text showing that no path was found.
 		if (this.invalidPath) {
-
+			// Background rectangle.
 			g.setColor(ORANGE_COLOR);
 			g.fillRect(0, 0, SIZE * scale, SIZE * scale);
 
+			// Font setup.
 			int fontSize = 10 * scale;
 			var font = g2d
 				.getFont()
@@ -66,6 +74,7 @@ public class StarCanvas extends JComponent {
 			
 			g2d.setFont(font);
 
+			// Draw text.
 			g2d.setColor(WHITE_COLOR);
 			g2d.drawString("No Path Found!", fontSize, SIZE / 2 * scale - fontSize / 2);
 
@@ -88,6 +97,7 @@ public class StarCanvas extends JComponent {
 		g.setColor(GREEN_COLOR);
 		g2d.setStroke(new BasicStroke((scale + 1) / 2));
 		if (indices != null && indices.length > 1) {
+			// Draw each line.
 			for (int i = 1; i < indices.length; i++) {
 				var s1 = stars[indices[i]];
 				var s2 = stars[indices[i - 1]];
