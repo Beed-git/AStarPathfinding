@@ -11,6 +11,7 @@ import javax.swing.JFrame;
 
 public class StarCanvas extends JComponent {
 	public static final int SIZE = 100;
+	public static final int CANVAS_OFFSET = 5;
 
 	// Constants for colours.;
 	private static final Color BLACK_COLOR = new Color(40, 44, 52);
@@ -33,7 +34,7 @@ public class StarCanvas extends JComponent {
 		var frame = new JFrame();
 		frame.setResizable(false);
 		frame.setTitle(title);
-		frame.setPreferredSize(new Dimension(SIZE * scale, SIZE * scale));
+		frame.setPreferredSize(new Dimension((SIZE + (CANVAS_OFFSET * 2)) * scale, (SIZE + (CANVAS_OFFSET * 2)) * scale));
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.pack();
 		return frame;
@@ -59,12 +60,13 @@ public class StarCanvas extends JComponent {
 	public void paint(Graphics g) {
 		super.paint(g);
 		var g2d = (Graphics2D)g;
+		int canvasSize = (SIZE + (CANVAS_OFFSET * 2)) * scale;
 
 		// If the path was invalid, draw text showing that no path was found.
 		if (this.invalidPath) {
 			// Background rectangle.
 			g.setColor(ORANGE_COLOR);
-			g.fillRect(0, 0, SIZE * scale, SIZE * scale);
+			g.fillRect(0, 0, canvasSize, canvasSize);
 
 			// Font setup.
 			int fontSize = 10 * scale;
@@ -83,9 +85,7 @@ public class StarCanvas extends JComponent {
 
 		// Fill background.
 		g.setColor(BLACK_COLOR);
-		g.fillRect(0, 0, SIZE * scale, SIZE * scale);
-
-		int offset = scale / 2;
+		g.fillRect(0, 0, canvasSize, canvasSize);
 
 		// If there are no stars don't draw anything.
 		if (this.stars == null) {
@@ -101,24 +101,42 @@ public class StarCanvas extends JComponent {
 			for (int i = 1; i < indices.length; i++) {
 				var s1 = stars[indices[i]];
 				var s2 = stars[indices[i - 1]];
-				g2d.draw(
-					new Line2D.Float(
-					(int)(s1.x * scale + offset),
-					(int)(s1.y * scale + offset),
-					(int)(s2.x * scale + offset),
-					(int)(s2.y * scale + offset)
-				));
+				DrawLine(g2d, s1.x, s1.y, s2.x, s2.y);
 			}
 		}
 
 		// Draw the stars.
 		g.setColor(ORANGE_COLOR);
 		for (var s : this.stars) {
-			g.fillOval(
-				(int)(s.x * scale), 
-				(int)(s.y * scale), 
-				scale, 
-				scale);
+			DrawPoint(g2d, s.x, s.y);
 		}
 	} 
+
+	private void DrawPoint(Graphics g2d, float x, float y) {
+		y = SIZE - y + CANVAS_OFFSET;
+		x += CANVAS_OFFSET;
+
+		g2d.fillOval(
+			(int)(x * scale), 
+			(int)(y * scale), 
+			scale, 
+			scale);
+	}
+
+	private void DrawLine(Graphics2D g2d, float x1, float y1, float x2, float y2) {
+		int offset = scale / 2;
+
+		y1 = SIZE - y1 + CANVAS_OFFSET; 
+		y2 = SIZE - y2 + CANVAS_OFFSET;
+		x1 += CANVAS_OFFSET;
+		x2 += CANVAS_OFFSET;
+
+		g2d.draw(
+			new Line2D.Float(
+			(int)(x1 * scale + offset),
+			(int)(y1 * scale + offset),
+			(int)(x2 * scale + offset),
+			(int)(y2 * scale + offset)
+		));
+	}
 }
